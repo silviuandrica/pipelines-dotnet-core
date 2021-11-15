@@ -9,11 +9,33 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-variables:
-  buildConfiguration: 'Release'
+parameters:
+- name: counter
+  displayName: Counter
+  type: number
+  default: 5
 
-steps:
-- script: "echo Build.DefinitionName: $(Build.DefinitionName) Build.BuildId: $(Build.BuildId)"
-  displayName: Build info
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+jobs:
+- job: generate
+  steps:
+  - checkout: none
+  - bash: |
+      temp=""
+      for i in {1..${{ parameters.counter }} } 
+      do 
+        temp+="\"Param_$i\": {\"value\": $i}, "
+      done
+      temp="{$temp}"
+      echo "##vso[task.setVariable variable=param;isOutput=true]$temp"
+    name: mtrx
+    
+- job: build
+  dependsOn: generate
+  strategy:
+    matrix: $[ dependencies.generate.outputs['mtrx.param'] ]    
+  steps:
+  - checkout: none
+  - script: echo $(value)
+  - template: template.yml
+    parameters:
+      param: $(value)
