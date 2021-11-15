@@ -26,6 +26,7 @@ jobs:
         temp+="\"Param_$i\": {\"value\": $i}, "
       done
       temp="{$temp}"
+      echo "temp = $temp"
       echo "##vso[task.setVariable variable=param;isOutput=true]$temp"
     name: mtrx
     
