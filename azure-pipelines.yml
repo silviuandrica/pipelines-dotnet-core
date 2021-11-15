@@ -21,7 +21,7 @@ jobs:
   - checkout: none
   - bash: |
       temp=""
-      for i in {1..${{ parameters.counter }} } 
+      for i in $(seq 1 ${{ parameters.counter }})
       do 
         temp+="\"Param_$i\": {\"value\": $i}, "
       done
