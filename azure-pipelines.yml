@@ -9,34 +9,20 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-parameters:
-- name: counter
-  displayName: Counter
-  type: number
-  default: 5
-
-jobs:
-- job: generate
-  steps:
-  - checkout: none
-  - bash: |
-      temp=""
-      for i in $(seq 1 ${{ parameters.counter }})
-      do 
-        temp+="\"Param_$i\": {\"value\": $i}, "
-      done
-      temp="{$temp}"
-      echo "temp = $temp"
-      echo "##vso[task.setVariable variable=param;isOutput=true]$temp"
-    name: mtrx
-    
-- job: build
-  dependsOn: generate
-  strategy:
-    matrix: $[ dependencies.generate.outputs['mtrx.param'] ]    
-  steps:
-  - checkout: none
-  - script: echo $(value)
-  - template: template.yml
-    parameters:
-      param: $(value)
+stages:
+  - stage: stage1
+    jobs:
+      - job: 
+        steps:
+          - script: echo stage 1      
+  - stage: stage2
+    jobs:
+      - job: 
+        steps:
+          - script: echo stage 2
+  - stage: stage3
+    dependsOn: stage1
+    jobs:
+      - job: 
+        steps:
+          - script: echo stage 3
