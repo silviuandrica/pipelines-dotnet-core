@@ -1,5 +1,0 @@
-parameters:
-  param: 0
-
-steps:
-- script: echo ${{parameters.param}}
